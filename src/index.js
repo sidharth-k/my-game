@@ -2,12 +2,13 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import ThreeScene  from './ThreeScene';
+import WorkingThreeScene from './workingThreeScene';
 import reportWebVitals from './reportWebVitals';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <ThreeScene />
+    <WorkingThreeScene />
   </React.StrictMode>
 );
 

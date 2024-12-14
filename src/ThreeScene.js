@@ -1,5 +1,8 @@
 import React, { useEffect, useRef } from 'react';
 import * as THREE from 'three';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import robo from "./assets/robot.glb"
 
 function ThreeScene() {
   const mountRef = useRef(null);
@@ -22,23 +25,41 @@ function ThreeScene() {
     renderer.setSize(window.innerWidth, window.innerHeight);
     mountRef.current.appendChild(renderer.domElement);
 
-    // Create a cube
-    const geometry = new THREE.BoxGeometry();
-    const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-    const cube = new THREE.Mesh(geometry, material);
-    scene.add(cube);
+    const light = new THREE.DirectionalLight(0xffffff, 1);
+    light.position.set(5, 5, 5).normalize();
+    scene.add(light);
 
-    // Animation loop
-    const animate = () => {
-      requestAnimationFrame(animate);
+    const controls = new OrbitControls(camera, renderer.domElement);
 
-      // Rotate cube
-      cube.rotation.x += 0.01;
-      cube.rotation.y += 0.01;
+    const loader = new GLTFLoader();
+  
+      loader.load(
+      robo,
+      (gltf) => {
+          // Add the loaded model to the scene
+          const model = gltf.scene;
+          scene.add(model);
+          model.position.set(0, 0, 0); // Optional: Adjust model position
+      },
+      (xhr) => {
+          // Optional: Monitor loading progress
+          console.log((xhr.loaded / xhr.total * 100) + '% loaded');
+      },
+      (error) => {
+          console.error('An error occurred:', error);
+      }
+  );
 
-      renderer.render(scene, camera);
-    };
-    animate();
+  camera.lookAt(0, 0, 0);
+  camera.position.set(10, 10, 10);
+
+  const animate = function() {
+    requestAnimationFrame(animate);
+    controls.update();
+    renderer.render(scene, camera);
+  };
+
+  animate();
 
     // Cleanup on unmount
     return () => {
