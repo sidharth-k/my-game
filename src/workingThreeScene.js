@@ -37,17 +37,30 @@ function WorkingThreeScene() {
     // Load the model using GLTFLoader
     const loader = new GLTFLoader();
     let model;
-
+    let modelGltf;
+    let mixer = null;
+    let clock = new THREE.Clock();
     loader.load(
       robo,
       (gltf) => {
         // Model loaded successfully
+        modelGltf = gltf;
         model = gltf.scene;
-        scene.add(model);
         model.position.set(0, 0, 0); // Optional: Adjust model position
-
+        // let clip = mixer.clipAction(modelGltf.animations[0], model);
+        // clip.play();
+        scene.add(model);
+           // Setup animation mixer
+        if (gltf.animations.length > 0) {
+            mixer = new THREE.AnimationMixer(model);
+            gltf.animations.forEach((clip) => {
+              const action = mixer.clipAction(clip);
+              action.play();
+            });
+          }
         // Update state when model is loaded
         setIsModelLoaded(true);
+        // mixer =  new THREE.AnimationMixer(model);
         console.log('Model loaded successfully!');
       },
       (xhr) => {
@@ -65,12 +78,27 @@ function WorkingThreeScene() {
     const animate = function () {
       requestAnimationFrame(animate);
 
-      if (isModelLoaded) {
+      if (isModelLoaded && mixer) {
         // Once the model is loaded, update controls and render
         controls.update();
+        
+        const delta = clock.getDelta();
+        mixer.update(delta);
         renderer.render(scene, camera);
+        
       }
     };
+
+    
+    // let clip = mixer.clipAction(glb.animations[0], glb.scene);
+    // clip.play();
+
+	// use the following once the loader has loaded the model
+	// if (modelGltf.animations.length > 0) {
+		// mixer = new THREE.AnimationMixer( modelGltf.scene );
+		// modelGltf.animations.forEach( clip => { mixer.clipAction( clip ).loop = THREE.LoopRepeat; } );
+		// mixer.clipAction( modelGltf.animations[ 0 ] ).play();
+	// }
 
     animate();
 
