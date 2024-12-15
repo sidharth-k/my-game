@@ -23,12 +23,13 @@ function WorkingThreeScene() {
 
     // Create renderer
     const renderer = new THREE.WebGLRenderer();
+    renderer.setClearColor(0xffffff);
     renderer.setSize(window.innerWidth, window.innerHeight);
     mountRef.current.appendChild(renderer.domElement);
 
     // Lighting
-    const light = new THREE.DirectionalLight(0xffffff, 1);
-    light.position.set(5, 5, 5).normalize();
+    const light = new THREE.DirectionalLight(0xffffff, 10);
+    light.position.set(10, 10, 10).normalize();
     scene.add(light);
 
     const controls = new OrbitControls(camera, renderer.domElement);
@@ -60,7 +61,7 @@ function WorkingThreeScene() {
 
     // Camera position and look-at adjustments
     camera.lookAt(0, 0, 0);
-
+    camera.position.set(0,0,1);
     const animate = function () {
       requestAnimationFrame(animate);
 
